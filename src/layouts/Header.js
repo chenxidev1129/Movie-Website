@@ -10,7 +10,7 @@ function Header() {
             </div>
             <div className="flex w-full justify-center">
                 <div className="relative w-96 h-10">
-                    <input className="flex space-x-24 items-center justify-end flex-1 h-full w-full px-5 pt-1.5 pb-2 bg-gray-800 rounded-2xl text-white" placeholder="Search Movies & People" />
+                    <input type={"text"} className="flex space-x-24 items-center justify-end flex-1 h-full w-full px-5 pt-1.5 pb-2 bg-gray-800 rounded-2xl text-white" placeholder="Search Movies & People" onChange={ (event) => searchMovie(event.target.value) } />
                     <img className="absolute top-2 right-4 w-6 h-5 rounded-lg" src={searchIcon}/>
                 </div>
             </div>

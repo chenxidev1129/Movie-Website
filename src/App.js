@@ -1,8 +1,9 @@
 import logo from './logo.svg';
 import './App.css';
 import Layout from './layouts/Layout';
+import logoImage from './assets/images/logo.png';
+import searchIcon from './assets/images/search_icon.png';
 import selectIcon from './assets/images/select_icon.png';
-import movieIcon from './assets/images/sample_images/1.jpg';
 import { useEffect, useState } from 'react';
 
 function App() {
@@ -11,6 +12,7 @@ function App() {
   const [videoList, setVideoList] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState('popularity.desc');
+  const [keywords, setKeywords] = useState('');
   const [isShowDetail, setIsShowDetail] = useState(false);
   const [detailInfo, setDetailInfo] = useState({});
 
@@ -20,7 +22,25 @@ function App() {
 
   const getMovieList = async (page = 1, isClear = false) => {
     const api_key = process.env.REACT_APP_API_KEY;
-    fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + api_key + '&language=en-US&sort_by=' + sortBy + '&include_adult=false&include_video=false&page=' + page + '&with_watch_monetization_types=flatrate')
+    fetch('https://api.themoviedb.org/3/discover/movie?api_key=' + api_key + '&language=en-US&sort_by=' + sortBy + '&include_adult=false&include_video=false&page=' + page + '&with_watch_monetization_types=flatrate&with_keywords=' + keywords)
+      .then((response) => response.json())
+      .then((data) => {
+        const movies = data.results;
+        if (isClear) {
+          setMovieList(movies);
+        } else {
+          setMovieList([...movieList, ...movies]);
+        }
+        setCurrentPage(data.page);
+      })
+      .catch((err) => {
+         console.log(err.message);
+      });
+  };
+
+  const searchMovieList = async (page = 1, isClear = false) => {
+    const api_key = process.env.REACT_APP_API_KEY;
+    fetch('https://api.themoviedb.org/3/search/movie?api_key=' + api_key + '&language=en-US&page=' + page + '&include_adult=false&query=' + keywords)
       .then((response) => response.json())
       .then((data) => {
         const movies = data.results;
@@ -50,7 +70,6 @@ function App() {
   };
 
   const sortMovieList = (sort_by) => {
-    console.log(sort_by);
     setMovieList([]);
     setSortBy(sort_by);
     getMovieList(1, true);
@@ -62,8 +81,24 @@ function App() {
     setIsShowDetail(true);
   };
 
+  const searchMovie = () => {
+    setMovieList([]);
+    searchMovieList(1, true);
+  };
+
   return (
     <Layout>
+      <div className="flex px-9 py-8 bg-gradient-to-r from-black to-gray-900 shadow w-full h-[96px]">
+        <div className="w-1/6 h-full">
+          <img src={logoImage} />
+        </div>
+        <div className="flex w-full justify-center">
+          <div className="relative w-96 h-10">
+            <input type={"text"} className="flex space-x-24 items-center justify-end flex-1 h-full w-full px-5 pt-1.5 pb-2 bg-gray-800 rounded-2xl text-white" placeholder="Search Movies & People" onChange={ (event) => setKeywords(event.target.value) } />
+            <img className="absolute top-2 right-4 w-6 h-5 rounded-lg" src={searchIcon} onClick={ () => searchMovie() } />
+          </div>
+        </div>
+      </div>
       <div className="bg-[#1717177F] px-2 py-4">
         <div className="flex flex-col items-start justify-end px-4 py-4 bg-gray-900 bg-opacity-50 shadow rounded-3xl">
           <div className="w-full h-full flex justify-end">
@@ -81,7 +116,7 @@ function App() {
               <img className="absolute top-4 right-6" src={selectIcon} />
             </div>
           </div>
-          <div className="w-full grid grid-cols-5 gap-5 pt-5">
+          <div className="w-full grid grid-cols-1 md:grid-cols-5 gap-5 pt-5">
             {
               movieList.map((movieItem) => (
                 <div key={"movie-item-" + movieItem.id} className="flex flex-col gap-2 space-y-0.5 w-full h-[400px] cursor-pointer transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300" onClick={() => showDetail(movieItem.id)}>

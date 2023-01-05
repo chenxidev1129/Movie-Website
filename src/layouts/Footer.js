@@ -3,7 +3,7 @@ import logoImage from '../assets/images/logo.png';
 
 function Footer() {
     return (
-        <div className="flex px-9 py-20 bg-gradient-to-r from-black to-gray-900 shadow w-full h-[200px]">
+        <div className="flex flex-col md:flex-row px-9 py-20 bg-gradient-to-r from-black to-gray-900 shadow w-full h-[200px]">
             <div className="w-1/6 h-full">
                 <img src={logoImage} />
             </div>
